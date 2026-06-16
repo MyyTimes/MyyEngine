@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  gameengine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gameengine
+    restart: unless-stopped
+
+    # ============================================================
+    # GUI Display Forwarding
+    # Uncomment ONE of the sections below based on your OS.
+    # ============================================================
+
+    # --- Windows (requires VcXsrv or similar X server) ---
+    # 1. Install VcXsrv: https://sourceforge.net/projects/vcxsrv/
+    # 2. Launch XLaunch with "Disable access control" checked
+    # 3. Set DISPLAY to your host IP
+    #
+    # environment:
+    #   - DISPLAY=host.docker.internal:0.0
+    # volumes:
+    #   - ./GameEngine/Assets:/home/gameuser/app/Assets:ro
+
+    # --- Linux (native X11 forwarding) ---
+    #
+    # environment:
+    #   - DISPLAY=${DISPLAY}
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    #   - ./GameEngine/Assets:/home/gameuser/app/Assets:ro
+    # devices:
+    #   - /dev/dri:/dev/dri

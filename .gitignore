@@ -1,0 +1,155 @@
+# =========================
+# Visual Studio / MSBuild
+# =========================
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options directory
+.vs/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Build log
+*.log
+*.tlog
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Visual Studio Trace Files
+*.e2e
+
+# IntelliTrace
+*.IntelliTrace
+
+# =========================
+# MSBuild Output
+# =========================
+*.obj
+*.pch
+*.pdb
+*.ilk
+*.idb
+*.exp
+*.lib
+*.iobj
+*.ipdb
+*.exe
+*.dll
+*.ncb
+*.sdf
+*.opensdf
+*.opendb
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# =========================
+# NuGet Packages
+# =========================
+packages/
+!packages/repositories.config
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# NuGet v3 lock file
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# =========================
+# C/C++ Specific
+# =========================
+*.o
+*.d
+*.gch
+*.out
+*.app
+*.dSYM/
+
+# Precompiled Headers
+*.pch
+*.gch
+
+# =========================
+# OS Generated
+# =========================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+
+# =========================
+# IDE / Editor
+# =========================
+
+# JetBrains (CLion, Rider)
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+
+# =========================
+# Misc
+# =========================
+*.swp
+*.swo
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
