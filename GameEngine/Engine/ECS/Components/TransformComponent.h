@@ -4,8 +4,8 @@
 
 struct TransformComponent : public Component
 {
-    Vector2 position;
-    Vector2 size;
+    Vector2<> position;
+    Vector2<> size;
     float rotation = 0.0f;
     //Vector2 angular;
 };

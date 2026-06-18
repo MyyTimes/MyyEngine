@@ -1,11 +1,11 @@
 #pragma once
 #include "../ECS/GameObjectManager.h"
-#include "../Core/RenderQueue.h"
+#include "../Systems/InputSystem.h"
 
 class Scene
 {
 public:
-	Scene() = default;
+	Scene() : m_input(InputSystem::GetInstance()) {}
 	virtual ~Scene() = default;
 
 	// Copying and Moving is Forbidden
@@ -22,4 +22,5 @@ public:
 protected:
 	// Each scene has its own GameObjects Manager
 	GameObjectManager m_gameObjectManager;
+	InputSystem& m_input;
 };

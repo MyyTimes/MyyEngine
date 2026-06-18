@@ -76,39 +76,15 @@ void DemoGame::OnEnter()
 
 void DemoGame::OnUpdate(float dt)
 {
-	const Uint8* state = SDL_GetKeyboardState(NULL);
-	/* with transform
-	if (m_player)
-	{
-		TransformComponent* transform = m_player->GetComponent<TransformComponent>();
-		if (transform)
-		{
-			if (state[SDL_SCANCODE_D]) transform->position.x += 200.0f * 0.016f;
-			if (state[SDL_SCANCODE_A]) transform->position.x -= 200.0f * 0.016f;
-		}
-	}
-	*/
 	if (m_player)
 	{
 		auto* rigidbody = m_player->GetComponent<RigidbodyComponent>();
 		if (rigidbody)
 		{
-			if (state[SDL_SCANCODE_D])
-			{
-				rigidbody->ApplyForce(50.0f, 0.0f);
-			}
-			if (state[SDL_SCANCODE_A])
-			{
-				rigidbody->ApplyForce(-50.0f, 0.0f);
-			}
-			if (state[SDL_SCANCODE_W])
-			{
-				rigidbody->ApplyForce(0.0f, -50.0f);
-			}
-			if (state[SDL_SCANCODE_S])
-			{
-				rigidbody->ApplyForce(0.0f, 50.0f);
-			}
+			if (m_input.IsKeyDown(SDL_SCANCODE_D)) rigidbody->ApplyForce(50.0f, 0.0f);
+			if (m_input.IsKeyDown(SDL_SCANCODE_A)) rigidbody->ApplyForce(-50.0f, 0.0f);
+			if (m_input.IsKeyDown(SDL_SCANCODE_W)) rigidbody->ApplyForce(0.0f, -50.0f);
+			if (m_input.IsKeyDown(SDL_SCANCODE_S)) rigidbody->ApplyForce(0.0f, 50.0f);
 		}
 	}
 

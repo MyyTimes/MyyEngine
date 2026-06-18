@@ -138,6 +138,7 @@
     <ClCompile Include="Engine\Game\Game.cpp" />
     <ClCompile Include="Engine\Scene\SceneManager.cpp" />
     <ClCompile Include="Engine\Systems\AnimationSystem.cpp" />
+    <ClCompile Include="Engine\Systems\InputSystem.cpp" />
     <ClCompile Include="Engine\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="Engine\Core\RenderQueue.cpp" />
     <ClCompile Include="Engine\ECS\GameObject.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Engine\Scene\Scene.h" />
     <ClInclude Include="Engine\Scene\SceneManager.h" />
     <ClInclude Include="Engine\Systems\AnimationSystem.h" />
+    <ClInclude Include="Engine\Systems\InputSystem.h" />
     <ClInclude Include="Engine\Systems\PhysicsSystem.h" />
     <ClInclude Include="Engine\Core\RenderQueue.h" />
     <ClInclude Include="Engine\ECS\GameObject.h" />

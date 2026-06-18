@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "Game.h"
+#include "../Systems/InputSystem.h"
 
 constexpr float FIXED_DT = 1.0f / 60.0f;  // Fixed timestep for physics
 constexpr float MAX_DT = 0.05f;            // Cap delta time to prevent spiral of death
@@ -42,6 +43,16 @@ bool Game::Init(const std::string& title, int width, int height)
 
 	// Textures and Asset Manager
 	m_assets.Init(m_renderer);
+
+	// Input system -> instance
+	InputSystem::GetInstance().AddSubscriber([this](const SDL_Event& event)
+		{
+			if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE))
+			{
+				m_isRunning = false;
+			}
+		}
+	);
 
 	// Fonts
 	m_fonts.Init(m_renderer);
@@ -114,6 +125,8 @@ void Game::Run()
 
 void Game::ProcessInput()
 {
+	InputSystem::GetInstance().Update();
+	/*
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
@@ -144,6 +157,7 @@ void Game::ProcessInput()
 				break;
 		}
 	}
+	*/
 }
 
 void Game::Update(float deltaTime)

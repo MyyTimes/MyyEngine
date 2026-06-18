@@ -13,8 +13,6 @@ void AssetManager::Init(SDL_Renderer* r)
 
 void AssetManager::Shutdown()
 {
-	if (m_texture.empty() && !m_renderer) return;
-
 	for (auto& kv : m_texture)
 	{
 		if (kv.second)
