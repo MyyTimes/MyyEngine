@@ -9,11 +9,8 @@ constexpr float MAX_DT = 0.05f;            // Cap delta time to prevent spiral o
 Game::Game() {}
 Game::~Game() { Shutdown(); }
 
-bool Game::Init(const std::string& title, int width, int height)
+bool Game::Init(const std::string& title, int width, int height, bool isVSync)
 {
-	m_windowWidth = width;
-	m_windowHeight = height;
-
 	// SDL
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
@@ -22,24 +19,14 @@ bool Game::Init(const std::string& title, int width, int height)
 	}
 
 	// Window
-	m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_windowWidth, m_windowHeight, SDL_WINDOW_SHOWN);
-	if (!m_window)
+	if (!m_window.Init(title, width, height, isVSync))
 	{
-		std::cerr << "Window Failed: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		return false;
 	}
+	SDL_Renderer* m_renderer = m_window.GetRenderer();
 
-	// Renderer
-	m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (!m_renderer)
-	{
-		std::cerr << "Renderer Failed: " << SDL_GetError() << std::endl;
-		SDL_DestroyWindow(m_window);
-		m_window = nullptr;
-		SDL_Quit();
-		return false;
-	}
+	Renderer2D::Init(m_window.GetRenderer());
 
 	// Textures and Asset Manager
 	m_assets.Init(m_renderer);
@@ -67,7 +54,7 @@ bool Game::Init(const std::string& title, int width, int height)
 	m_sounds.Play("background");
 
 	// Load DEMOSCENE
-	m_sceneManager.LoadScene(std::make_unique<DemoGame>(m_renderer, &m_RQ, &m_assets));
+	m_sceneManager.LoadScene(std::make_unique<DemoGame>(m_renderer, &m_RQ, &m_assets, &m_sounds));
 
 	m_isRunning = true;
 
@@ -126,38 +113,6 @@ void Game::Run()
 void Game::ProcessInput()
 {
 	InputSystem::GetInstance().Update();
-	/*
-	SDL_Event event;
-	while (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-			case SDL_QUIT:
-				m_isRunning = false;
-				break;
-
-			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-				{
-					m_isRunning = false;
-				}
-				break;
-
-			case SDL_KEYUP:
-				break;
-
-			case SDL_MOUSEMOTION:
-				break;
-
-			case SDL_MOUSEBUTTONDOWN:
-				std::cout << "Mouse: " << event.button.x << "," << event.button.y << std::endl;
-				break;
-
-			default:
-				break;
-		}
-	}
-	*/
 }
 
 void Game::Update(float deltaTime)
@@ -167,8 +122,7 @@ void Game::Update(float deltaTime)
 
 void Game::Render()
 {
-	SDL_SetRenderDrawColor(m_renderer, 30, 30, 90, 255); // background
-	SDL_RenderClear(m_renderer); // clear window
+	m_window.Clear(30, 30, 90, 255); // background
 	
 	m_RQ.Clear();
 
@@ -177,30 +131,23 @@ void Game::Render()
 	
 	m_sceneManager.Render();
 
-	m_RQ.Flush(m_renderer);
+	m_RQ.Flush();
 	// Double-buffering
-	SDL_RenderPresent(m_renderer); 
+
+	m_window.Present();
 }
 
 void Game::Shutdown()
 {
-	if (!m_isRunning && !m_window && !m_renderer) return;
+	if (!m_isRunning) return;
 	m_isRunning = false;
 
 	m_sounds.Shutdown();
 	m_fonts.Shutdown();
 	m_assets.Shutdown();
+	m_window.Shutdown();
 
-	if (m_renderer)
-	{
-		SDL_DestroyRenderer(m_renderer);
-		m_renderer = nullptr;
-	}
-	if (m_window)
-	{
-		SDL_DestroyWindow(m_window);
-		m_window = nullptr;
-	}
+	Renderer2D::Shutdown();
 
 	SDL_Quit();
 }

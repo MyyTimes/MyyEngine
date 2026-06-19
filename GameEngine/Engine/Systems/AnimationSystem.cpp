@@ -23,10 +23,11 @@ void AnimationSystem::Update(float dt)
 			{
 				AnimationComponent* anim = obj->GetComponent<AnimationComponent>();
 
-				if (!anim || !anim->isPlaying || !anim->currentClip || anim->currentClip->frames.empty())
+				if (!anim || !anim->isPlaying || !anim->currentClip || anim->currentClip->frames.empty() || anim->currentClip->fps <= 0.f)
 					continue;
 
 				anim->time += dt;
+
 				const float frameDuration = 1.0f / anim->currentClip->fps;
 				const int totalFrames = static_cast<int>(anim->currentClip->frames.size());
 
@@ -51,15 +52,12 @@ void AnimationSystem::Update(float dt)
 					}
 				}
 				
-				if (!anim->currSpriteComponent && obj)
-				{
-					anim->currSpriteComponent = obj->GetComponent<SpriteComponent>();
-				}
+				SpriteComponent* sprite = obj->GetComponent<SpriteComponent>();
 
-				if (anim->currSpriteComponent && anim->currentClip)
+				if (sprite)
 				{
-					anim->currSpriteComponent->texture = anim->currentClip->texture;
-					anim->currSpriteComponent->srcRect = anim->currentClip->frames[anim->frameIndex];
+					sprite->texture = anim->currentClip->texture;
+					sprite->srcRect = anim->currentClip->frames[anim->frameIndex];
 				}
 			}
 		}

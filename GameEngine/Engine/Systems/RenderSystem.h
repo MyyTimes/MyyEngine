@@ -1,13 +1,13 @@
 #pragma once
 #include "ISystem.h"
 #include "../ECS/GameObjectManager.h"
-#include "../Core/RenderQueue.h"
-#include <SDL2/SDL.h>
+#include "../Renderer/RenderQueue.h"
+#include "../Renderer/Camera2D.h"
 
 class RenderSystem : public ISystem
 {
 public:
-	RenderSystem(GameObjectManager* = nullptr, RenderQueue* = nullptr, SDL_Renderer* = nullptr);
+	RenderSystem(GameObjectManager* = nullptr, RenderQueue* = nullptr, Camera2D* = nullptr);
 	~RenderSystem() override;
 
 	// Copying and Moving is Forbidden
@@ -25,5 +25,5 @@ public:
 private:
 	GameObjectManager* m_gameObjectManager;
 	RenderQueue* m_RQ;
-	SDL_Renderer* m_renderer;
+	Camera2D* m_camera;
 };

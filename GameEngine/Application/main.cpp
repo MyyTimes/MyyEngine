@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
 	Game game;
 
-	if (!game.Init(WINDOW_NAME, 1280, 720))
+	if (!game.Init(WINDOW_NAME, 1280, 720, true))
 		return -1;
 
 	game.Run();

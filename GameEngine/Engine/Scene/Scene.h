@@ -1,6 +1,7 @@
 #pragma once
 #include "../ECS/GameObjectManager.h"
 #include "../Systems/InputSystem.h"
+#include "../Renderer/Renderer2D.h"
 
 class Scene
 {

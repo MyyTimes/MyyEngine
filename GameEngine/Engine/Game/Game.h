@@ -3,7 +3,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#include "../Core/RenderQueue.h"
+#include "../Core/Window.h"
+#include "../Renderer/RenderQueue.h"
 
 #include "../Assets/SoundManager.h"
 #include "../Assets/AssetManager.h"
@@ -27,7 +28,7 @@ public:
 	Game(Game&&) = delete;
 	Game& operator=(Game&&) = delete;
 
-	bool Init(const std::string&, int, int);
+	bool Init(const std::string&, int, int, bool = true);
 	void Run();
 	void Shutdown();
 
@@ -37,14 +38,11 @@ private:
 	void Update(float);
 	void Render();
 
-	// Variables
-	SDL_Window* m_window = nullptr;
-	SDL_Renderer* m_renderer = nullptr;
-
 	bool m_isRunning = false;
-	int m_windowWidth = 800;
-	int m_windowHeight = 800;
 
+	// Window
+	Window m_window;
+	
 	// Scene Manager
 	SceneManager m_sceneManager;
 

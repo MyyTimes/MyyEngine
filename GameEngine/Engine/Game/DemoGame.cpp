@@ -1,19 +1,23 @@
 #include "DemoGame.h"
 
-DemoGame::DemoGame(SDL_Renderer* r, RenderQueue* rq, AssetManager* a) : m_renderer{ r }, m_RQ{ rq }, m_assets{ a } {}
+DemoGame::DemoGame(SDL_Renderer* r, RenderQueue* rq, AssetManager* a, SoundManager* s) : m_renderer{ r }, m_RQ{ rq }, m_assets{ a }, m_sounds{ s } {}
 
 void DemoGame::OnEnter()
 {
 	// ---------- SYSTEMS AND POINTERS ----------
+	// Create Camera
+	m_camera = std::make_unique<Camera2D>(800, 800);
+	m_camera->SetZoom(1.1f);
+	//m_camera->Shake(2.f, 3.f);
 	// Physics system
-	auto physSys = std::make_unique<PhysicsSystem>(&m_gameObjectManager);
+	auto physSys = std::make_unique<PhysicsSystem>(&m_gameObjectManager, 0.f, 0.f);
 	if (!physSys->Init())
 	{
 		std::cerr << "Physics System Init Failed!" << std::endl;
 		return;
 	}
 	// Render System
-	auto renderSys = std::make_unique<RenderSystem>(&m_gameObjectManager, m_RQ, m_renderer);
+	auto renderSys = std::make_unique<RenderSystem>(&m_gameObjectManager, m_RQ, m_camera.get());
 	if (!renderSys->Init())
 	{
 		std::cerr << "Render System Init Failed!" << std::endl;
@@ -27,14 +31,6 @@ void DemoGame::OnEnter()
 		return;
 	}
 
-	// Borders
-	float m_windowWidth = 800.f;
-	float m_windowHeight = 800.f;
-	physSys->CreateBox(m_windowWidth / 2, m_windowHeight - 5, m_windowWidth, 10, false, 1.0f, 0.5f);
-	physSys->CreateBox(m_windowWidth / 2, 5, m_windowWidth, 10, false, 1.0f, 0.5f);
-	physSys->CreateBox(5, m_windowHeight / 2, 10, m_windowHeight, false, 1.0f, 0.5f);
-	physSys->CreateBox(m_windowWidth - 5, m_windowHeight / 2, 10, m_windowHeight, false, 1.0f, 0.5f);
-
 	// PLAYER
 	float startX = 100.0f;
 	float startY = 200.0f;
@@ -43,10 +39,11 @@ void DemoGame::OnEnter()
 	m_player->GetComponent<TransformComponent>()->position = Vector2(startX, startY);
 	m_player->AddComponent<SpriteComponent>();
 	m_player->GetComponent<SpriteComponent>()->texture = m_assets->GetTexture("brick", "Assets/Textures/bricks.png");
+	m_player->GetComponent<SpriteComponent>()->props.blendMode = BlendMode::Additive;
 	// its physics
 	auto* playerPhy = m_player->AddComponent<RigidbodyComponent>();
 	playerPhy->isStatic = false;
-	playerPhy->friction = 0.3f;
+	playerPhy->friction = 0.7f;
 	playerPhy->density = 0.8f;
 	playerPhy->body = physSys->CreateBox(startX, startY, 32.f, 32.f, !playerPhy->isStatic, playerPhy->density, playerPhy->friction);
 	// its animation
@@ -56,11 +53,8 @@ void DemoGame::OnEnter()
 	idleAnim.loop = true;
 	idleAnim.fps = 12.0f;
 	idleAnim.texture = m_assets->GetTexture("player", "Assets/Textures/player.png");
-	//idleAnim.frames.push_back(SDL_Rect{ 0,   0, 32, 32 }); // 1 Frame
-	//idleAnim.frames.push_back(SDL_Rect{ 32,  0, 32, 32 }); // 2 Frame
-	//idleAnim.frames.push_back(SDL_Rect{ 64,  0, 32, 32 }); // 3 Frame
-
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 3; i++)
+	{
 		idleAnim.frames.push_back(SDL_Rect{ i * 64, 0, 64, 64 });
 	}
 
@@ -72,6 +66,7 @@ void DemoGame::OnEnter()
 	m_systems.push_back(std::move(animSys));
 
 	m_player->Init();
+	m_camera->SetTarget(m_player);
 }
 
 void DemoGame::OnUpdate(float dt)
@@ -81,10 +76,10 @@ void DemoGame::OnUpdate(float dt)
 		auto* rigidbody = m_player->GetComponent<RigidbodyComponent>();
 		if (rigidbody)
 		{
-			if (m_input.IsKeyDown(SDL_SCANCODE_D)) rigidbody->ApplyForce(50.0f, 0.0f);
-			if (m_input.IsKeyDown(SDL_SCANCODE_A)) rigidbody->ApplyForce(-50.0f, 0.0f);
-			if (m_input.IsKeyDown(SDL_SCANCODE_W)) rigidbody->ApplyForce(0.0f, -50.0f);
-			if (m_input.IsKeyDown(SDL_SCANCODE_S)) rigidbody->ApplyForce(0.0f, 50.0f);
+			if (m_input.IsKeyDown(SDL_SCANCODE_D)) rigidbody->ApplyForce(5.0f, 0.0f);
+			if (m_input.IsKeyDown(SDL_SCANCODE_A)) rigidbody->ApplyForce(-5.0f, 0.0f);
+			if (m_input.IsKeyDown(SDL_SCANCODE_W)) rigidbody->ApplyForce(0.0f, -5.0f);
+			if (m_input.IsKeyDown(SDL_SCANCODE_S)) rigidbody->ApplyForce(0.0f, 5.0f);
 		}
 	}
 
@@ -95,6 +90,13 @@ void DemoGame::OnUpdate(float dt)
 		sys->Update(dt);
 	}
 
+	if (m_camera)
+	{
+		m_camera->Update(dt);
+	}
+
+	std::cout << m_player->GetComponent<TransformComponent>()->position.x << std::endl;
+
 	m_gameObjectManager.Refresh();
 }
 
@@ -104,6 +106,24 @@ void DemoGame::OnRender()
 	{
 		sys->Render();
 	}
+
+	// DEBUG
+	// Kırmızı yarı saydam bir çarpışma kutusu (Debug Rect)
+	Renderer2D::DrawRect({ 100, 100 }, { 50, 50 }, { 255, 0, 0, 128 }, true);
+	// Mavi ve içi boş bir saldırı menzili çemberi
+	Renderer2D::DrawCircle({ 400, 400 }, 150.0f, { 0, 0, 255, 255 }, false);
+	// Ters dönmüş, 45 derece açılı ve yeşile boyanmış bir oyuncu spritı
+	SpriteProperties props;
+	props.blendMode = BlendMode::None;
+	props.rotation = 45.0f;
+	props.flip = SDL_FLIP_HORIZONTAL;
+	props.colorTint = { 0, 255, 0, 255 };
+	SDL_Texture* playerTexture = m_assets->GetTexture("brick");
+	Renderer2D::DrawSprite(playerTexture, { 200, 200 }, props);
+
+	Vector2f worldCirclePos = { 400.0f, 400.0f };
+	Vector2f screenCirclePos = m_camera->WorldToScreen(worldCirclePos);
+	Renderer2D::DrawCircle(screenCirclePos, 150.0f * m_camera->GetZoom(), { 0, 0, 255, 255 }, false);
 }
 
 void DemoGame::OnExit()

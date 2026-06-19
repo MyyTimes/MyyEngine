@@ -9,11 +9,12 @@
 #include "../Systems/PhysicsSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
+#include "../Assets/SoundManager.h"
 
 class DemoGame : public Scene
 {
 public:
-    DemoGame(SDL_Renderer* renderer, RenderQueue* rq, AssetManager* assets);
+    DemoGame(SDL_Renderer*, RenderQueue*, AssetManager*, SoundManager*);
     ~DemoGame() override = default;
 
     void OnEnter() override;
@@ -25,8 +26,12 @@ private:
     SDL_Renderer* m_renderer;
     RenderQueue* m_RQ;
     AssetManager* m_assets;
+	SoundManager* m_sounds;
 
-    GameObjectManager m_gameObjectManager;
+	// Camera
+	std::unique_ptr<Camera2D> m_camera;
+
+	GameObjectManager m_gameObjectManager;
 
     // Systems
     std::vector<std::unique_ptr<ISystem>> m_systems;

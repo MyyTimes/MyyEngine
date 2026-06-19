@@ -132,21 +132,25 @@
     <ClCompile Include="Engine\Assets\AssetManager.h" />
     <ClCompile Include="Engine\Assets\FontManager.cpp" />
     <ClCompile Include="Engine\Assets\SoundManager.cpp" />
+    <ClCompile Include="Engine\Core\Window.cpp" />
     <ClCompile Include="Engine\ECS\Components\AnimationComponent.h" />
     <ClCompile Include="Engine\Core\Math\Vector2.h" />
     <ClCompile Include="Engine\Game\DemoGame.cpp" />
     <ClCompile Include="Engine\Game\Game.cpp" />
+    <ClCompile Include="Engine\Renderer\Camera2D.cpp" />
+    <ClCompile Include="Engine\Renderer\Renderer2D.cpp" />
     <ClCompile Include="Engine\Scene\SceneManager.cpp" />
     <ClCompile Include="Engine\Systems\AnimationSystem.cpp" />
     <ClCompile Include="Engine\Systems\InputSystem.cpp" />
     <ClCompile Include="Engine\Systems\PhysicsSystem.cpp" />
-    <ClCompile Include="Engine\Core\RenderQueue.cpp" />
+    <ClCompile Include="Engine\Renderer\RenderQueue.cpp" />
     <ClCompile Include="Engine\ECS\GameObject.cpp" />
     <ClCompile Include="Engine\ECS\GameObjectManager.cpp" />
     <ClCompile Include="Engine\Systems\RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\FontManager.h" />
+    <ClInclude Include="Engine\Core\Window.h" />
     <ClInclude Include="Engine\ECS\Components\Component.h" />
     <ClInclude Include="Engine\ECS\Components\RigidbodyComponent.h" />
     <ClInclude Include="Engine\ECS\Components\SpriteComponent.h" />
@@ -154,12 +158,14 @@
     <ClInclude Include="Engine\Assets\SoundManager.h" />
     <ClInclude Include="Engine\Game\DemoGame.h" />
     <ClInclude Include="Engine\Game\Game.h" />
+    <ClInclude Include="Engine\Renderer\Camera2D.h" />
+    <ClInclude Include="Engine\Renderer\Renderer2D.h" />
     <ClInclude Include="Engine\Scene\Scene.h" />
     <ClInclude Include="Engine\Scene\SceneManager.h" />
     <ClInclude Include="Engine\Systems\AnimationSystem.h" />
     <ClInclude Include="Engine\Systems\InputSystem.h" />
     <ClInclude Include="Engine\Systems\PhysicsSystem.h" />
-    <ClInclude Include="Engine\Core\RenderQueue.h" />
+    <ClInclude Include="Engine\Renderer\RenderQueue.h" />
     <ClInclude Include="Engine\ECS\GameObject.h" />
     <ClInclude Include="Engine\ECS\GameObjectManager.h" />
     <ClInclude Include="Engine\Systems\ISystem.h" />
