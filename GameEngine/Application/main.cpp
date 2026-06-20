@@ -14,5 +14,6 @@ int main(int argc, char *argv[])
 		return -1;
 
 	game.Run();
+	game.Shutdown();
 	return 0;
 }

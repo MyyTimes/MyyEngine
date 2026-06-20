@@ -1,7 +1,10 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+
 #include "Game.h"
+
 #include "../Systems/InputSystem.h"
+#include "../Core/Logger.h"
 
 constexpr float FIXED_DT = 1.0f / 60.0f;  // Fixed timestep for physics
 constexpr float MAX_DT = 0.05f;            // Cap delta time to prevent spiral of death
@@ -11,6 +14,8 @@ Game::~Game() { Shutdown(); }
 
 bool Game::Init(const std::string& title, int width, int height, bool isVSync)
 {
+	Logger::Init();
+
 	// SDL
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
@@ -139,7 +144,8 @@ void Game::Render()
 
 void Game::Shutdown()
 {
-	if (!m_isRunning) return;
+	if (m_isShuttingDown) return;
+	m_isShuttingDown = true;
 	m_isRunning = false;
 
 	m_sounds.Shutdown();
@@ -150,4 +156,6 @@ void Game::Shutdown()
 	Renderer2D::Shutdown();
 
 	SDL_Quit();
+
+	Logger::Shutdown();
 }

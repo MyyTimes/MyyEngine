@@ -39,6 +39,7 @@ private:
 	void Render();
 
 	bool m_isRunning = false;
+	bool m_isShuttingDown = false;
 
 	// Window
 	Window m_window;
