@@ -29,7 +29,7 @@ void Logger::Shutdown()
 {
 	if (m_fileStream.is_open())
 	{
-		LOG_INFO("ENDED");
+		LOG_INFO("ENDED\n");
 		m_fileStream.close();
 	}
 }

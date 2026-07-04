@@ -23,11 +23,20 @@ void DemoGame::OnEnter()
 		std::cerr << "Render System Init Failed!" << std::endl;
 		return;
 	}
+	// > Debug Render
+	m_debugRenderer = std::make_unique<DebugRenderer>(&m_gameObjectManager, m_camera.get(), m_renderer);
 	// Animation System
 	auto animSys = std::make_unique<AnimationSystem>(&m_gameObjectManager);
 	if (!animSys->Init())
 	{
 		std::cerr << "Animation System Init Failed!" << std::endl;
+		return;
+	}
+	// Particle System
+	auto particleSys = std::make_unique<ParticleSystem>(m_camera.get(), m_renderer);
+	if (!particleSys->Init())
+	{
+		std::cerr << "Particle System Init Failed!" << std::endl;
 		return;
 	}
 
@@ -64,6 +73,7 @@ void DemoGame::OnEnter()
 	m_systems.push_back(std::move(physSys));
 	m_systems.push_back(std::move(renderSys));
 	m_systems.push_back(std::move(animSys));
+	m_systems.push_back(std::move(particleSys));
 
 	m_player->Init();
 	m_camera->SetTarget(m_player);
@@ -98,6 +108,40 @@ void DemoGame::OnUpdate(float dt)
 	std::cout << m_player->GetComponent<TransformComponent>()->position.x << std::endl;
 
 	m_gameObjectManager.Refresh();
+
+
+	// PARTICLE
+	if (m_input.IsKeyPressed(SDL_SCANCODE_SPACE))
+	{
+		ParticleProps magicDust;
+		magicDust.position = { 400.0f, 300.0f };
+		magicDust.velocity = { 0.0f, -30.0f };
+		magicDust.velocityVariation = { 150.0f, 150.0f };
+		magicDust.colorBegin = { 0, 255, 255, 255 };
+		magicDust.colorEnd = { 0, 100, 255, 0 };   
+
+		magicDust.sizeBegin = 8.0f;
+		magicDust.sizeEnd = 0.0f;
+		magicDust.sizeVariation = 3.0f; 
+
+		magicDust.lifeTime = 1.2f;
+
+		for (int i = 0; i < 40; i++)
+		{
+			ParticleSystem::PushParticleProps(magicDust);
+		}
+	}
+
+	// Debug F1
+	if (m_input.IsKeyPressed(SDL_SCANCODE_F1))
+	{
+		m_debugRenderer->Toggle();
+
+		if (m_debugRenderer->IsEnabled())
+			LOG_INFO("Debug Renderer is enable.");
+		else
+			LOG_INFO("Debug Renderer is disable.");
+	}
 }
 
 void DemoGame::OnRender()
@@ -124,6 +168,11 @@ void DemoGame::OnRender()
 	Vector2f worldCirclePos = { 400.0f, 400.0f };
 	Vector2f screenCirclePos = m_camera->WorldToScreen(worldCirclePos);
 	Renderer2D::DrawCircle(screenCirclePos, 150.0f * m_camera->GetZoom(), { 0, 0, 255, 255 }, false);
+
+	if (m_debugRenderer)
+	{
+		m_debugRenderer->Render();
+	}
 }
 
 void DemoGame::OnExit()

@@ -4,12 +4,17 @@
 #include "../ECS/GameObjectManager.h"
 
 #include "../Scene/Scene.h"
-#include "../Assets/AssetManager.h"
 
+#include "../Systems/ParticleSystem.h"
 #include "../Systems/PhysicsSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
+
 #include "../Assets/SoundManager.h"
+#include "../Assets/AssetManager.h"
+
+#include "../Core/Logger.h"
+#include "../Debug/DebugRenderer.h"
 
 class DemoGame : public Scene
 {
@@ -30,6 +35,8 @@ private:
 
 	// Camera
 	std::unique_ptr<Camera2D> m_camera;
+	// Debug Renderer
+	std::unique_ptr<DebugRenderer> m_debugRenderer;
 
 	GameObjectManager m_gameObjectManager;
 

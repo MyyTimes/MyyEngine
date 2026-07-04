@@ -135,11 +135,13 @@
     <ClCompile Include="Engine\Assets\SoundManager.cpp" />
     <ClCompile Include="Engine\Core\Logger.cpp" />
     <ClCompile Include="Engine\Core\Window.cpp" />
+    <ClCompile Include="Engine\Debug\DebugRenderer.cpp" />
     <ClCompile Include="Engine\ECS\Components\AnimationComponent.h" />
     <ClCompile Include="Engine\Core\Math\Vector2.h" />
     <ClCompile Include="Engine\Game\DemoGame.cpp" />
     <ClCompile Include="Engine\Game\Game.cpp" />
     <ClCompile Include="Engine\Renderer\Camera2D.cpp" />
+    <ClCompile Include="Engine\Systems\ParticleSystem.cpp" />
     <ClCompile Include="Engine\Renderer\Renderer2D.cpp" />
     <ClCompile Include="Engine\Scene\SceneManager.cpp" />
     <ClCompile Include="Engine\Systems\AnimationSystem.cpp" />
@@ -154,6 +156,7 @@
     <ClInclude Include="Engine\Assets\FontManager.h" />
     <ClInclude Include="Engine\Core\Logger.h" />
     <ClInclude Include="Engine\Core\Window.h" />
+    <ClInclude Include="Engine\Debug\DebugRenderer.h" />
     <ClInclude Include="Engine\ECS\Components\Component.h" />
     <ClInclude Include="Engine\ECS\Components\RigidbodyComponent.h" />
     <ClInclude Include="Engine\ECS\Components\SpriteComponent.h" />
@@ -162,6 +165,7 @@
     <ClInclude Include="Engine\Game\DemoGame.h" />
     <ClInclude Include="Engine\Game\Game.h" />
     <ClInclude Include="Engine\Renderer\Camera2D.h" />
+    <ClInclude Include="Engine\Systems\ParticleSystem.h" />
     <ClInclude Include="Engine\Renderer\Renderer2D.h" />
     <ClInclude Include="Engine\Scene\Scene.h" />
     <ClInclude Include="Engine\Scene\SceneManager.h" />
