@@ -1,5 +1,6 @@
 #include <random>
 #include "ParticleSystem.h"
+#include "../Renderer/Camera2D.h"
 
 // between -+5%
 inline float GenerateRandomCoefficient()
@@ -81,10 +82,10 @@ void ParticleSystem::Render()
 
 		// Lerp for size and color
 		float currSize = particle.sizeBegin + (particle.sizeEnd - particle.sizeBegin) * lifeRatio;
-		Uint8 r = particle.colorBegin.r + (particle.colorEnd.r - particle.colorBegin.r) * lifeRatio;
-		Uint8 g = particle.colorBegin.g + (particle.colorEnd.g - particle.colorBegin.g) * lifeRatio;
-		Uint8 b = particle.colorBegin.b + (particle.colorEnd.b - particle.colorBegin.b) * lifeRatio;
-		Uint8 a = particle.colorBegin.a + (particle.colorEnd.a - particle.colorBegin.a) * lifeRatio;
+		Uint8 r = static_cast<Uint8>(particle.colorBegin.r + (particle.colorEnd.r - particle.colorBegin.r) * lifeRatio);
+		Uint8 g = static_cast<Uint8>(particle.colorBegin.g + (particle.colorEnd.g - particle.colorBegin.g) * lifeRatio);
+		Uint8 b = static_cast<Uint8>(particle.colorBegin.b + (particle.colorEnd.b - particle.colorBegin.b) * lifeRatio);
+		Uint8 a = static_cast<Uint8>(particle.colorBegin.a + (particle.colorEnd.a - particle.colorBegin.a) * lifeRatio);
 
 		Vector2f screenPos = m_camera->WorldToScreen(particle.position);
 		float zoom = m_camera->GetZoom();

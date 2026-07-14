@@ -26,13 +26,6 @@ struct AnimationComponent : public Component
     {
         frameIndex = 0;
         time = 0.0f;
-
-        /*
-        if (owner)
-        {
-            currSpriteComponent = owner->GetComponent<SpriteComponent>();
-        }
-        */
     }
 
     void Update(float dt) override {}

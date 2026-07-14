@@ -44,11 +44,15 @@ void DemoGame::OnEnter()
 	float startX = 100.0f;
 	float startY = 200.0f;
 	m_player = m_gameObjectManager.CreateGameObject();
-	m_player->AddComponent<TransformComponent>();
-	m_player->GetComponent<TransformComponent>()->position = Vector2(startX, startY);
-	m_player->AddComponent<SpriteComponent>();
-	m_player->GetComponent<SpriteComponent>()->texture = m_assets->GetTexture("brick", "Assets/Textures/bricks.png");
-	m_player->GetComponent<SpriteComponent>()->props.blendMode = BlendMode::Additive;
+	m_player->AddComponent<TransformComponent>()->position = Vector2(startX, startY);;
+	//m_player->GetComponent<TransformComponent>()->position = Vector2(startX, startY);
+	SpriteComponent *sprCom = m_player->AddComponent<SpriteComponent>();
+	sprCom->texture = m_assets->GetTexture("brick", "Assets/Textures/bricks.png");
+	sprCom->props.blendMode = BlendMode::Additive;
+	//m_player->GetComponent<SpriteComponent>()->texture = m_assets->GetTexture("brick", "Assets/Textures/bricks.png");
+	//m_player->GetComponent<SpriteComponent>()->props.blendMode = BlendMode::Additive;
+	m_player->AddComponent<ParticleComponent>();
+
 	// its physics
 	auto* playerPhy = m_player->AddComponent<RigidbodyComponent>();
 	playerPhy->isStatic = false;

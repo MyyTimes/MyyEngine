@@ -4,39 +4,29 @@
 #include "ISystem.h"
 #include "../Core/Math/Vector2.h"
 #include "../Renderer/Camera2D.h"
+#include "../Core/Props/ParticleProps.h"
 
-// PARTICLE
-// Config -> adjustable parameters
-struct ParticleProps
-{
-	Vector2f position;
-	Vector2f velocity;
-	Vector2f velocityVariation; // spread
-
-	SDL_Color colorBegin, colorEnd;
-	float sizeBegin, sizeEnd;
-	float sizeVariation;
-
-	float lifeTime;
-};
-
-// A real created particle
-struct Particle
-{
-	Vector2f position;
-	Vector2f velocity;
-	SDL_Color colorBegin, colorEnd;
-	float sizeBegin, sizeEnd;
-
-	float lifeTime;
-	float lifeRemaining;
-	bool isActive;
-};
-
+class Camera2D;
 
 // PARTICLE SYSTEM
 class ParticleSystem : public ISystem
 {
+private: // Private struct
+
+	// A real created particle
+	struct Particle
+	{
+		Vector2f position;
+		Vector2f velocity;
+		SDL_Color colorBegin, colorEnd;
+		float sizeBegin, sizeEnd;
+
+		float lifeTime;
+		float lifeRemaining;
+		bool isActive;
+	};
+
+
 public:
 	ParticleSystem(Camera2D* = nullptr, SDL_Renderer* = nullptr, int = 1000);
 	~ParticleSystem() = default;

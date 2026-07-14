@@ -10,6 +10,7 @@
 #include "Components/AnimationComponent.h"
 #include "Components/RigidbodyComponent.h"
 #include "Components/SpriteComponent.h"
+#include "Components/ParticleComponent.h"
 
 class GameObject
 {
@@ -33,6 +34,7 @@ public:
     T* AddComponent(Args&&... args)
     {
         T* comp = new T(std::forward<Args>(args)...);
+		comp->m_ownerObject = this;
         m_components.push_back(comp);
         return comp;
     }

@@ -1,24 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
+#include "../Core/Props/SpriteProperties.h"
 #include "../Core/Math/Vector2.h" 
-
-// Blend Modes
-enum class BlendMode
-{
-	None,       // Opaque
-	Blend,      // Alfa
-	Additive,   // Glows
-	Multiply    // Shadows
-};
-
-struct SpriteProperties
-{
-	float rotation = 0.0f;                       
-	SDL_RendererFlip flip = SDL_FLIP_NONE;       
-	Vector2f scale = { 1.0f, 1.0f };             
-	SDL_Color colorTint = { 255, 255, 255, 255 };
-	BlendMode blendMode = BlendMode::Blend;      
-};
 
 class Renderer2D
 {
