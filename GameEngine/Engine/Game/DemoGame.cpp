@@ -150,24 +150,29 @@ void DemoGame::OnUpdate(float dt)
 
 void DemoGame::OnRender()
 {
+	Renderer2D::BeginScene();
+
+	// ========== GAME & GAME OBJECTS ==========
+
 	for (auto& sys : m_systems)
 	{
 		sys->Render();
 	}
 
-	// DEBUG
-	// Kırmızı yarı saydam bir çarpışma kutusu (Debug Rect)
-	Renderer2D::DrawRect({ 100, 100 }, { 50, 50 }, { 255, 0, 0, 128 }, true);
-	// Mavi ve içi boş bir saldırı menzili çemberi
-	Renderer2D::DrawCircle({ 400, 400 }, 150.0f, { 0, 0, 255, 255 }, false);
-	// Ters dönmüş, 45 derece açılı ve yeşile boyanmış bir oyuncu spritı
+	// ========== DEBUG & UI ==========
+
 	SpriteProperties props;
 	props.blendMode = BlendMode::None;
 	props.rotation = 45.0f;
 	props.flip = SDL_FLIP_HORIZONTAL;
 	props.colorTint = { 0, 255, 0, 255 };
-	SDL_Texture* playerTexture = m_assets->GetTexture("brick");
-	Renderer2D::DrawSprite(playerTexture, { 200, 200 }, props);
+	SDL_Texture* brickTexture = m_assets->GetTexture("brick");
+
+	Vector2f worldBrickPos = { 200.0f, 200.0f };
+	Vector2f screenBrickPos = m_camera->WorldToScreen(worldBrickPos);
+	Renderer2D::DrawSprite(brickTexture, screenBrickPos, props);
+	
+	Renderer2D::DrawRect({ 100, 100 }, { 50, 50 }, { 255, 0, 0, 128 }, true);
 
 	Vector2f worldCirclePos = { 400.0f, 400.0f };
 	Vector2f screenCirclePos = m_camera->WorldToScreen(worldCirclePos);
@@ -177,6 +182,9 @@ void DemoGame::OnRender()
 	{
 		m_debugRenderer->Render();
 	}
+
+	// end batch
+	Renderer2D::EndScene();
 }
 
 void DemoGame::OnExit()

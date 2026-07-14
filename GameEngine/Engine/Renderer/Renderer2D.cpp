@@ -2,22 +2,29 @@
 #include <iostream>
 #include <cmath>
 
-SDL_Renderer* Renderer2D::m_renderer = nullptr;
-
 void Renderer2D::Init(SDL_Renderer* renderer)
 {
 	m_renderer = renderer;
+	// batch rendering
+	s_vertices.reserve(MAX_VERTICES);
+	s_indices.reserve(MAX_INDICES);
 }
 
 void Renderer2D::Shutdown()
 {
 	m_renderer = nullptr;
+	s_vertices.clear();
+	s_indices.clear();
 }
 
 void Renderer2D::BeginScene()
 {
-	// İleride Batch Rendering (Toplu Çizim) için buffer'ları (hafıza) 
-	// burada sıfırlayacağız. Şimdilik anında (immediate) çizim yapıyoruz.
+	// batch rendering
+	s_quadCount = 0;
+	s_vertices.clear();
+	s_indices.clear();
+	s_currTexture = nullptr;
+	s_currBlendMode = SDL_BLENDMODE_BLEND;
 }
 
 void Renderer2D::EndScene()
@@ -27,8 +34,19 @@ void Renderer2D::EndScene()
 
 void Renderer2D::Flush()
 {
-	// SDL 2.0.18+ ile SDL_RenderGeometry kullanarak tüm sprite'ları 
-	// tek bir draw call'da çizeceğimiz sistem buraya gelecek.
+	if (s_quadCount == 0) return;
+
+	if (s_currTexture)
+	{
+		SDL_SetTextureBlendMode(s_currTexture, s_currBlendMode);
+	}
+
+	// send all sprites to GPU to render
+	SDL_RenderGeometry(m_renderer, s_currTexture, s_vertices.data(), s_vertices.size(), s_indices.data(), s_indices.size());
+
+	s_quadCount = 0;
+	s_vertices.clear();
+	s_indices.clear();
 }
 
 static SDL_BlendMode GetSDLBlendMode(BlendMode mode)
@@ -45,6 +63,24 @@ static SDL_BlendMode GetSDLBlendMode(BlendMode mode)
 
 void Renderer2D::DrawSprite(SDL_Texture* texture, const Vector2f &pos, const SpriteProperties& props)
 {
+	if (!texture) return;
+
+	int texW, texH;
+	SDL_QueryTexture(texture, nullptr, nullptr, &texW, &texH);
+
+	SDL_Rect srcRect = { 0, 0, texW, texH };
+
+	SDL_Rect dstRect = {
+		static_cast<int>(pos.x - (texW / 2.0f)),
+		static_cast<int>(pos.y - (texH / 2.0f)),
+		texW,
+		texH
+	};
+
+	DrawSprite(texture, srcRect, dstRect, props);
+
+
+	/*
 	if (!texture || !m_renderer) return;
 
 	int textureW, textureH;
@@ -56,10 +92,76 @@ void Renderer2D::DrawSprite(SDL_Texture* texture, const Vector2f &pos, const Spr
 	dstRect.h = static_cast<int>(textureH * props.scale.y);
 
 	DrawSprite(texture, { 0, 0, textureW, textureH }, dstRect, props);
+	*/
 }
 
 void Renderer2D::DrawSprite(SDL_Texture* texture, const SDL_Rect& srcRect, const SDL_Rect& dstRect, const SpriteProperties& props)
 {
+	SDL_BlendMode targetBlendMode = GetSDLBlendMode(props.blendMode);
+
+	if (s_quadCount >= MAX_QUADS || (s_currTexture != texture && s_currTexture != nullptr) || (s_currBlendMode != targetBlendMode && s_quadCount > 0))
+	{
+		Flush();
+	}
+
+	s_currTexture = texture;
+	s_currBlendMode = targetBlendMode;
+
+	int texW, texH;
+	SDL_QueryTexture(texture, nullptr, nullptr, &texW, &texH);
+
+	// calculate UV coordinates (0.0 - 1.0)
+	float u_min = static_cast<float>(srcRect.x) / texW;
+	float v_min = static_cast<float>(srcRect.y) / texH;
+	float u_max = static_cast<float>(srcRect.x + srcRect.w) / texW;
+	float v_max = static_cast<float>(srcRect.y + srcRect.h) / texH;
+
+	// flipping
+	if (props.flip & SDL_FLIP_HORIZONTAL) std::swap(u_min, u_max);
+	if (props.flip & SDL_FLIP_VERTICAL) std::swap(v_min, v_max);
+
+	// calculate center and size
+	float cx = dstRect.x + (dstRect.w / 2.0f);
+	float cy = dstRect.y + (dstRect.h / 2.0f);
+	float halfW = (dstRect.w * props.scale.x) / 2.0f;
+	float halfH = (dstRect.h * props.scale.y) / 2.0f;
+
+	// rotation
+	float rad = props.rotation * (M_PI / 180.0f);
+	float cosA = std::cos(rad);
+	float sinA = std::sin(rad);
+
+	// rotate the point according to center point
+	auto RotatePoint = [&](float x, float y) -> SDL_FPoint {
+		return {
+			cx + (x * cosA - y * sinA),
+			cy + (x * sinA + y * cosA)
+		};
+		};
+
+	SDL_FPoint p0 = RotatePoint(-halfW, -halfH); // LT
+	SDL_FPoint p1 = RotatePoint(halfW, -halfH);  // RT
+	SDL_FPoint p2 = RotatePoint(halfW, halfH);   // RB
+	SDL_FPoint p3 = RotatePoint(-halfW, halfH);  // LB
+
+	SDL_Color color = props.colorTint;
+
+	s_vertices.push_back({ p0, color, {u_min, v_min} });
+	s_vertices.push_back({ p1, color, {u_max, v_min} });
+	s_vertices.push_back({ p2, color, {u_max, v_max} });
+	s_vertices.push_back({ p3, color, {u_min, v_max} });
+
+	int offset = s_quadCount * 4;
+	s_indices.push_back(offset + 0);
+	s_indices.push_back(offset + 1);
+	s_indices.push_back(offset + 2);
+	s_indices.push_back(offset + 2);
+	s_indices.push_back(offset + 3);
+	s_indices.push_back(offset + 0);
+
+	s_quadCount++;
+
+	/*
 	if (!texture || !m_renderer) return;
 
 	// Set blend mode (Alpha, Additive...)
@@ -73,10 +175,13 @@ void Renderer2D::DrawSprite(SDL_Texture* texture, const SDL_Rect& srcRect, const
 	SDL_Point center = { dstRect.w / 2, dstRect.h / 2 };
 
 	SDL_RenderCopyEx(m_renderer, texture, &srcRect, &dstRect, props.rotation, &center, props.flip);
+	*/
 }
 
 void Renderer2D::DrawRect(const Vector2f& pos, const Vector2f& size, const SDL_Color& color, bool filled)
 {
+	Flush();
+
 	if (!m_renderer) return;
 
 	SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
@@ -101,6 +206,8 @@ void Renderer2D::DrawRect(const Vector2f& pos, const Vector2f& size, const SDL_C
 
 void Renderer2D::DrawCircle(const Vector2f& center, float radius, const SDL_Color& color, bool filled)
 {
+	Flush();
+
 	if (!m_renderer) return;
 
 	SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
@@ -158,6 +265,8 @@ void Renderer2D::DrawCircle(const Vector2f& center, float radius, const SDL_Colo
 
 void Renderer2D::DrawLine(const Vector2f& start, const Vector2f& end, const SDL_Color& color)
 {
+	Flush();
+
 	if (!m_renderer) return;
 
 	SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
@@ -172,3 +281,4 @@ void Renderer2D::DrawText(SDL_Texture* textTexture, const Vector2f& position, co
 {
 	DrawSprite(textTexture, position, props);
 }
+

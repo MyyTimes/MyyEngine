@@ -39,9 +39,11 @@ void RenderSystem::Render()
 					Vector2f screenPos = m_camera->WorldToScreen(transform->position);
 
 					SDL_Rect dstRect;
-					dstRect.w = static_cast<int>(worldRect.w * m_camera->GetZoom());
-					dstRect.h = static_cast<int>(worldRect.h * m_camera->GetZoom());
-					dstRect.x = static_cast<int>(screenPos.x - (dstRect.w / 2.0f));  
+					// *** Scaling is done by Render2D class
+					// Thus, baseW is used, not worldRect
+					dstRect.w = static_cast<int>(baseW * m_camera->GetZoom());
+					dstRect.h = static_cast<int>(baseH * m_camera->GetZoom());
+					dstRect.x = static_cast<int>(screenPos.x - (dstRect.w / 2.0f));
 					dstRect.y = static_cast<int>(screenPos.y - (dstRect.h / 2.0f));
 
 					// Create sprite to push

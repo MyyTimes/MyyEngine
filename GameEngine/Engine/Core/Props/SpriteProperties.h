@@ -13,7 +13,7 @@ enum class BlendMode
 
 struct SpriteProperties
 {
-	float rotation = 0.0f;
+	float rotation = 0.0f; // angle
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 	Vector2f scale = { 1.0f, 1.0f };
 	SDL_Color colorTint = { 255, 255, 255, 255 };
